@@ -50,8 +50,11 @@ class OBOparser():
         term = []
         typeDefTerm = []
         ontology = Ontology()
-        for i in range(len(datafile)):
-            aline = str(datafile[i]).strip()
+        if type(datafile)==str:
+            datafile=open(datafile,'r')
+        elif (type(datafile)!=file)and(datafile!=list):
+            raise IOError('need to provide filename, file object, or list of lines')
+        for aline in datafile:
             #add meta data to ontology
             if counter == 0:
                 ontology.addMetaData(aline)
@@ -131,6 +134,8 @@ class OBOparser():
                            typeDefNode.isCyclic = typeDefTermSplitUp[1]
                 ontology.addTypeDef(typeDefNode)
                 typeDefTerm = []  
+        if type(datafile)==file:
+            datafile.close()
         return ontology
 
 class Node():
