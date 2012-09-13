@@ -453,4 +453,14 @@ class Ontology():
         Add type definition to the ontology.
         """
         self.typeDefs.append(typeDef)
-
+    def getTermById(self, termId):
+        """
+        Return a term object that has the id, or None if it is not found
+        """
+        toFind = termId.upper()
+        termFound = None
+        for term in self.terms:
+            if term.id.upper()==toFind:
+                termFound=term
+                break
+        return termFound
