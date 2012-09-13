@@ -454,6 +454,7 @@ class Ontology():
         Add type definition to the ontology.
         """
         self.typeDefs.append(typeDef)
+
     def getTermById(self, termId):
         """
         Return a term object that has the id, or None if it is not found
@@ -465,3 +466,16 @@ class Ontology():
                 termFound=term
                 break
         return termFound
+
+    def getAncestors(self, term):
+        """
+        Return a list of all the ancestral terms
+        """
+        if type(term)==str:
+            term = self.getTermById(term)
+        anc = []
+        t = term
+        while (t.isA!='')and(t.isA!=None):
+            t = self.getTermById(t.isA)
+            anc.append(t)
+        return anc
