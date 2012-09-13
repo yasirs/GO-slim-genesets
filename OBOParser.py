@@ -54,7 +54,8 @@ class OBOparser():
             datafile=open(datafile,'r')
         elif (type(datafile)!=file)and(datafile!=list):
             raise IOError('need to provide filename, file object, or list of lines')
-        for aline in datafile:
+        for rawline in datafile:
+            aline = rawline.rstrip()
             #add meta data to ontology
             if counter == 0:
                 ontology.addMetaData(aline)
