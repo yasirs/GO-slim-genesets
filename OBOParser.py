@@ -78,8 +78,7 @@ class OBOparser():
                             node.relationship = termSplitUp[1]
                         if termSplitUp[0] == "is_a":
                             values = str(termSplitUp[1]).split(" !")
-                            #node.isA = termSplitUp[1]
-                            node.isA = values[0]
+                            node.isA.append(values[0])
                         if termSplitUp[0] == "related_synonym":
                             node.related_synonym.append(termSplitUp[1])
                         if termSplitUp[0] == "synonym":
@@ -152,7 +151,7 @@ class Node():
         self.definition = ""
         self.relationship = ""
         self.related_synonym = []
-        self.isA = ""
+        self.isA = []
         self.synonym = []
         self.exactSynonym = ""
         self.broadSynonym = ""
@@ -193,7 +192,7 @@ class Node():
     
     def getIsA(self):
         """
-        Returns the is_A relationship.
+        Returns all the is_A relationships.
         """
         return self.isA
     
@@ -344,7 +343,7 @@ class TypeDefNode(Node):
         self.definition = ""
         self.relationship = ""
         self.related_synonym = []
-        self.isA = ""
+        self.isA = []
         self.synonym = []
         self.exactSynonym = ""
         self.broadSynonym = ""
@@ -473,9 +472,12 @@ class Ontology():
         """
         if type(term)==str:
             term = self.getTermById(term)
-        anc = []
-        t = term
-        while (t.isA!='')and(t.isA!=None):
-            t = self.getTermById(t.isA)
+        anc = set()
+	to_do = set([term])
+        while (len(to_do)>0):
+	    t = to_do.pop()
+            to_add = map(self.getTermById,t.isA)
+            anc.update(to_add)
+            to_do.update(to_add)
             anc.append(t)
-        return anc
+        return list(anc)
