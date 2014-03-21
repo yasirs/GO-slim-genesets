@@ -479,5 +479,4 @@ class Ontology():
             to_add = map(self.getTermById,t.isA)
             anc.update(to_add)
             to_do.update(to_add)
-            anc.append(t)
         return list(anc)
