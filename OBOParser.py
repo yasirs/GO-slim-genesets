@@ -378,7 +378,7 @@ class Ontology():
         """
         Creates an instance of an ontology from an OBO file.
         """
-        self.terms = []
+        self.terms = {}
         self.typeDefs = []
         self.metaData = []
         
@@ -388,7 +388,7 @@ class Ontology():
         Keyword arguments:
         newTerm -- a new OBO term to be added to the OBO ontology.
         """
-        self.terms.append(newTerm)
+        self.terms[newTerm.id] = newTerm
     
     def addTypeDef(self,typeDef):
         """
@@ -458,13 +458,10 @@ class Ontology():
         """
         Return a term object that has the id, or None if it is not found
         """
-        toFind = termId.upper()
-        termFound = None
-        for term in self.terms:
-            if term.id.upper()==toFind:
-                termFound=term
-                break
-        return termFound
+	if termId in self.terms:
+	    return self.terms[termId]
+	else:
+	    return None
 
     def getAncestors(self, term):
         """

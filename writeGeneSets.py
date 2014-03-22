@@ -4,8 +4,8 @@ def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/gos
     parser = OBOParser.OBOparser()
     ont_full = parser.createOntologyFromOBOFile(fullOBOFile)
     ont_slim = parser.createOntologyFromOBOFile(slimOBOFile)
-    all_terms = [x.id for x in ont_full.terms if ((x.getIsObsolete()=='')or(not x.getIsObsolete().upper()[0]=='T'))]
-    slim_terms = [x.id for x in ont_slim.terms]
+    all_terms = [x.id for x in ont_full.terms.itervalues() if ((x.getIsObsolete()=='')or(not x.getIsObsolete().upper()[0]=='T'))]
+    slim_terms = [x.id for x in ont_slim.terms.itervalues()]
 
     slim2ancs = {}
     for term in slim_terms:
@@ -60,7 +60,7 @@ def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/gos
             term2genes[anc].add(gene)
     fo = open(outfile,'w')
     for t,gs in term2genes.iteritems():
-    	fo.write(t+'\t'+str(gs))
+    	fo.write(t+'\t'+'\t'.join(gs)+'\n')
     fo.close()
     #return term2genes, badGos
 
