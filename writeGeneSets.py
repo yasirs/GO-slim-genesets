@@ -1,6 +1,7 @@
 import OBOParser
 
-def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/goslim_generic.obo',geneAssociationFile='data/gene_association.sgd',outfile='gosets.txt'):
+
+def getAll2Slim(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/goslim_generic.obo'):
     parser = OBOParser.OBOparser()
     ont_full = parser.createOntologyFromOBOFile(fullOBOFile)
     ont_slim = parser.createOntologyFromOBOFile(slimOBOFile)
@@ -20,19 +21,24 @@ def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/gos
     all2slim = {}
     for term in all_terms:
         if (len(all2slim)%100==0):
-	    print "done %i terms" %len(all2slim)
+            print "done %i terms" %len(all2slim)
         to_look = [term]
-	while len(to_look)>0:
-	    t = ont_full.getTermById(to_look.pop())
-	    if t.id in slim_terms:
-	    	break
-	    for tt in t.isA:
-	    	to_look.insert(0,tt)
+        while len(to_look)>0:
+            t = ont_full.getTermById(to_look.pop())
+            if t.id in slim_terms:
+                break
+            for tt in t.isA:
+                to_look.insert(0,tt)
         if t.id not in slim_terms:
-	    print "Error! %s has no ancestor in slim" %term
-	all2slim[term] = t.getId()
+            print "Error! %s has no ancestor in slim" %term
+        all2slim[term] = t.getId()
+    return all2slim, all_slim_ancs, slim2ancs
 
-	
+
+def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/goslim_generic.obo',geneAssociationFile='data/gene_association.sgd',outfile='gosets.txt'):
+    all2slim, all_slim_ancs, slim2ancs  = getAll2Slim(fullOBOFile, slimOBOFile)
+    print "got all2slim"
+
 
     term2genes = dict(((go,set()) for go in all_slim_ancs))
     gaf = open(geneAssociationFile,'r')
@@ -65,6 +71,12 @@ def writeGeneSets(fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/gos
     #return term2genes, badGos
 
 
+
+
+
 if __name__=='__main__':
 	writeGeneSets()
+
+
+
         
