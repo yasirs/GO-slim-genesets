@@ -1,8 +1,19 @@
 import OBOParser
+import os
+
+def who():
+	print "__file__ = ", __file__
+	print "path = ", os.path.split(__file__)
 
 class SlimGOGroups:
 
-    def __init__(self, fullOBOFile='data/gene_ontology.1_2.obo',slimOBOFile='data/goslim_generic.obo'):
+    def __init__(self, fullOBOFile=None, slimOBOFile=None):
+        self.path = os.path.split(__file__)[0]
+        if fullOBOFile==None:
+            fullOBOFile = self.path+'/data/gene_ontology.1_2.obo'
+        if slimOBOFile==None:
+            slimOBOFile = self.path+'/data/goslim_generic.obo'
+
         parser = OBOParser.OBOparser()
         ont_full = parser.createOntologyFromOBOFile(fullOBOFile)
         ont_slim = parser.createOntologyFromOBOFile(slimOBOFile)
@@ -33,7 +44,7 @@ class SlimGOGroups:
             if t.id not in slim_terms:
                 print "Error! %s has no ancestor in slim" %term
             self.all2slim[term] = t.getId()
-        self.term2genes = None
+        self.term2genes = dict(((go,set()) for go in self.all_slim_ancs))
         self.badGos = []
 
     def add_1_annot(self, gene, go):
@@ -44,12 +55,15 @@ class SlimGOGroups:
         else:
             #raise StandardError('Annotation term %s not found in Ontology' %go)
             self.badGos.append(go)
+            raise ValueError("Bad GO %s" %go)
         self.term2genes[slim_go].add(gene)
         for anc in self.slim2ancs[slim_go]:
             self.term2genes[anc].add(gene)
 
-    def read_gene_assoc(self,fname='data/gene_association.sgd'):
-        self.term2genes = dict(((go,set()) for go in self.all_slim_ancs))
+    def read_gene_assoc(self,fname=None):
+        if fname==None:
+            fname = self.path + '/data/gene_association.sgd'
+
         gaf = open(fname,'Ur')
         nline = 0
         for line in gaf:
